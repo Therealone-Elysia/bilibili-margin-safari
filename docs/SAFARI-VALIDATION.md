@@ -35,6 +35,6 @@
 - 所有页面和全部可选功能；私信发送、扫码授权、广告片段跳过、全部 GPU 背景未做专项实测。
 - 长时间性能、Safari 重启后的真实签名免开发者模式流程。
 - Developer ID 签名、公证和 App Store 分发。
-- GitHub Actions 云端执行；目前已准备流程，尚未上传运行。
+- GitHub Actions 云端执行：已触发 [macOS 构建检查](https://github.com/Therealone-Elysia/bilibili-margin-safari/actions/runs/43416721352)，发布准备时仍在等待运行器。当前通过结论来自本机测试，不代表云端构建已通过。
 
 Safari 重启会重置允许未签名扩展的设置。当前交付可用于本机测试和预发行验证，不能称为已完成 Apple 正式分发的发行版。测试时产生的浏览器数据、账号信息、观看历史与实时截图均未打包进源码或安装包。
