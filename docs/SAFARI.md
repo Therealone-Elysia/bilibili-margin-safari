@@ -12,7 +12,7 @@
 4. 在“设置 → 扩展”勾选“映间 MARGIN”。
 5. 打开 B 站，点击工具栏的 MARGIN 图标，在此网站上始终允许，然后刷新。只需授权 B 站相关网站，无需授权所有网站。
 
-应用本身不需要一直打开。不要删除或移动正在使用的应用包。Safari 重启后，“允许未签名扩展”会重置；开发构建可能需要重新允许。开发版不适合当作免设置的普通发行版分发。
+应用本身不需要一直打开。不要删除或移动正在使用的应用包。Safari 重启后，“允许未签名扩展”会重置；公开 ZIP 的 ad hoc 构建可能需要重新允许。普通 Apple 账号可按下文给自己的本机安装版签名；本分支已在关闭未签名开关、退出并重开 Safari 后验证通过。公开 ZIP 本身仍不适合当作免设置的普通发行版分发。
 
 停用：取消勾选扩展即可恢复原版。卸载应用前可以先通过映间设置导出本地数据。
 
@@ -62,6 +62,29 @@ Safari 扩展版本在上游数字版本后追加移植修订号（当前 `.1`�
 `.github/workflows/safari.yml` 提供手动构建及相关 PR 的 macOS 检查，并上传开发版构建产物。它不会自动公开发行或提交任何浏览器商店。
 
 建议首先以独立 fork 或 Safari 分支发布，将 Release 标为预发行版，并写清开发签名限制。本地构建成功不等同于已通过 Apple 分发审核。UI 实测和限制见 `SAFARI-VALIDATION.md`。
+
+## 本机开发证书签名（已通过 Safari 重启实测）
+
+公开分发和本机开发测试使用不同证书。只有普通 Apple 账号时，可先在 Xcode 中尝试创建 Apple Development 证书，无需为了这一步直接加入付费开发者计划。免费账号和描述文件可能有期限及能力限制，不能据此承诺永久免维护。
+
+1. 安装并打开苹果官方 Xcode，在 `Settings → Accounts` 登录自己的 Apple 账号。
+2. 选择 Personal Team，在 `Manage Certificates → + → Apple Development` 创建开发证书。如果该项不可用，可新建 macOS 应用项目，在 Signing & Capabilities 中选自己的 Personal Team、启用自动签名并构建，让 Xcode 自动申请证书。登录、协议及钥匙串授权由本人完成。
+3. 保留当前扩展和公开的 ad hoc ZIP，先生成独立的本机签名候选：
+
+```sh
+npm run pack:safari
+npm run sign:safari:local
+```
+
+脚本只操作生成的 MARGIN 应用，将候选保存在 `safari/local-build/MARGIN Safari.app`；没有合格证书时直接失败，不会自动退回 ad hoc 签名。存在多个开发证书时，通过 `SIGN_IDENTITY` 指定目标证书的指纹。证书及私钥留在本机钥匙串中，脚本不会导出或上传它们，也不会改动浏览器设置。
+
+退出旧版宿主应用，将候选复制到固定位置，例如 `/Applications/MARGIN Safari.app`。如果已存在同名应用，请先备份，不要直接覆盖仍在使用的副本。复制后用 `codesign --verify --deep --strict '/Applications/MARGIN Safari.app'` 检查完整性。
+
+随后关闭 Safari 的“允许未签名扩展”，在扩展列表启用签名版，重新授予 B 站访问权限并刷新。退出并重新打开 Safari，确认它仍保持启用且 MARGIN 页面正常加载。本分支在 Safari 27.3 上已完成以上检查；没有重启整台 Mac，也没有验证证书过期后的行为。签名到期或被撤销后需重新签名，不能承诺永久免维护。
+
+开发签名安装版只供自己的本机使用，不能代替面向其他用户的 Developer ID 签名及公证包，也不应上传到公开 Release。更换签名可能使 Safari 将其识别为另一个扩展，替换前应使用原扩展的导出功能备份个人设置和足迹；本次未迁移旧签名的本地存储。macOS 也可能要求确认新签名宿主对旧应用沙盒数据的访问；不要删除旧容器来绕过确认。扩展工作时无需保持宿主说明窗口运行。
+
+相关依据：[Apple 免费账号与 Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account)、[Xcode 管理签名证书](https://developer.apple.com/documentation/xcode/sharing-your-teams-signing-certificates)。本机验收结果见 `SAFARI-VALIDATION.md`，其他系统版本仍需各自验证。
 
 ## 正式签名与公证
 

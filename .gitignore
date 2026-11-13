@@ -6,6 +6,7 @@ tests/artifacts/
 dist-firefox
 dist-safari
 safari/build/
+safari/local-build/
 .npm-cache/
 .uv-cache/
 .python/

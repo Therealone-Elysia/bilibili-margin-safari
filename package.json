@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && node scripts/build.mjs",
     "build:safari": "tsc --noEmit && node scripts/build.mjs --safari",
     "pack:safari": "npm run build:safari && node scripts/safari-app.mjs",
+    "sign:safari:local": "node scripts/safari-sign-local.mjs",
     "test:safari": "node --test tests/safari-build.test.mjs",
     "pack": "npm run build && cd dist && rm -f ../margin.zip && zip -9qrX ../margin.zip .",
     "pack:firefox": "npm run pack && node scripts/firefox.mjs",
