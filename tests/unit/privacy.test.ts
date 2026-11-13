@@ -58,6 +58,21 @@ describe('最近搜索最小化', () => {
 });
 
 describe('消息来源与授权隔离', () => {
+  it('Safari 仅接受运行时提供的弹窗地址，不信任其他扩展或页面', () => {
+    chrome.runtime.getURL = path => `safari-web-extension://generated-resource-host/${path}`;
+    const sender = (url: string) => ({ id: 'bundle-id', url });
+    expect(trustedSender(sender(chrome.runtime.getURL('popup.html')), 'bundle-id')).toBe(true);
+    for (const url of ['safari-web-extension://other/popup.html', 'safari-web-extension://generated-resource-host/arbitrary.html', 'safari-web-extension://generated-resource-host/popup.html?spoof=1']) {
+      expect(trustedSender(sender(url), 'bundle-id')).toBe(false);
+    }
+    expect(trustedSender({ id: 'other', url: chrome.runtime.getURL('popup.html') }, 'bundle-id')).toBe(false);
+  });
+  it('没有 setAccessLevel 的浏览器仍清理旧凭据', async () => {
+    delete (chrome.storage.session as Partial<typeof chrome.storage.session>).setAccessLevel;
+    data['margin:app-auth'] = { key: 'legacy' };
+    await protectAuthStorage();
+    expect(data['margin:app-auth']).toBeUndefined();
+  });
   it('仅接受本扩展的指定页面或内容脚本', () => {
     expect(trustedSender({ id: 'fixture', url: 'https://www.bilibili.com/video/BV1abc123456' }, 'fixture')).toBe(true);
     expect(trustedSender({ id: 'fixture', url: 'chrome-extension://fixture/popup.html' }, 'fixture')).toBe(true);

@@ -4,7 +4,9 @@
 
 <h1>映间 MARGIN</h1>
 
-<p><strong>给 B 站换一个更清晰的界面。</strong></p>
+<p><strong>> 本分支在上游基础上增加 macOS Safari 支持。当前为开发签名构建；安装、构建、正式签名和公开分发限制见 [Safari 使用说明](docs/SAFARI.md)。[下载 Safari 预发行安装包](https://github.com/Therealone-Elysia/bilibili-margin-safari/releases) · [真机验收记录](docs/SAFARI-VALIDATION.md)。原项目与界面设计归 [jiuyang5354/bilibili-margin](https://github.com/jiuyang5354/bilibili-margin)。
+
+给 B 站换一个更清晰的界面。</strong></p>
 <p>编辑式排版、液态玻璃控件、动态背景，保留熟悉的原生播放体验。</p>
 <p>A quieter interface for Bilibili, with clean layouts, liquid glass controls and animated backgrounds.</p>
 
@@ -65,7 +67,7 @@
 
 **Firefox（140 及以上）**：从 [Firefox 附加组件商店安装](https://addons.mozilla.org/en-US/firefox/addon/%E6%98%A0%E9%97%B4-margin/)（推荐，可长期使用并自动更新）。备用方式：下载 [`margin-firefox.zip`](https://github.com/jiuyang5354/bilibili-margin/releases/latest/download/margin-firefox.zip)（直链，始终是最新版），打开 `about:debugging#/runtime/this-firefox`，点击**临时载入附加组件**，选择这个 zip；临时载入的扩展在重启 Firefox 后会被移除。
 
-其他 Chromium 内核浏览器（Brave、Opera、Vivaldi、Arc 等）可以按 Chrome 的步骤安装，但未逐一测试。Safari 暂不支持。
+其他 Chromium 内核浏览器（Brave、Opera、Vivaldi、Arc 等）可以按 Chrome 的步骤安装，但未逐一测试。本分支的 Safari 安装步骤见 [Safari 使用说明](docs/SAFARI.md)；上游发布包未提供 Safari 版本。
 
 ## 功能
 

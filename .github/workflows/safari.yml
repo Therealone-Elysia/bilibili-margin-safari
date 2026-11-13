@@ -1,0 +1,36 @@
+name: Safari macOS build
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'scripts/build.mjs'
+      - 'scripts/safari-*.mjs'
+      - 'safari/**'
+      - 'tests/**'
+      - 'package*.json'
+      - '.github/workflows/safari.yml'
+permissions:
+  contents: read
+jobs:
+  safari:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:unit
+      - run: npm run pack:safari
+      - run: npm run test:safari
+      - name: Validate app manifest with WebKit
+        run: |
+          xcrun clang -fobjc-arc -framework Cocoa -framework WebKit -mmacosx-version-min=15.4 safari/native/Validate.m -o safari/build/validate
+          safari/build/validate 'safari/build/MARGIN Safari.app/Contents/PlugIns/MARGIN Extension.appex'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: margin-safari-macos-development
+          path: margin-safari-macos.zip

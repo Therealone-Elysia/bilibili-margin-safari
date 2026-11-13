@@ -11,12 +11,18 @@ export function trustedSender(sender: chrome.runtime.MessageSender, extensionId:
     if (url.username || url.password) return false;
     if (url.protocol === 'chrome-extension:') return url.host === extensionId && url.pathname === '/popup.html';
     if (url.protocol === 'moz-extension:') return sender.url === chrome.runtime.getURL('popup.html');
+    // Safari uses a generated resource host, which is not the extension bundle ID.
+    if (url.protocol === 'safari-web-extension:') return sender.url === chrome.runtime.getURL('popup.html');
     return url.protocol === 'https:' && !url.port && PAGE_HOSTS.has(url.hostname);
   } catch { return false; }
 }
 
 export async function protectAuthStorage(): Promise<void> {
-  await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+  // Session storage is private to trusted contexts by default. Safari versions
+  // without setAccessLevel must still complete legacy credential cleanup.
+  if (typeof chrome.storage.session.setAccessLevel === 'function') {
+    await chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+  }
   // 清理旧版 storage.local 凭据；主动记住的授权由后台专用 IndexedDB 保存。
   await chrome.storage.local.remove(APP_AUTH_KEY);
 }

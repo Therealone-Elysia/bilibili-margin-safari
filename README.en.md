@@ -1,3 +1,5 @@
+> This fork adds macOS Safari packaging. The current build is ad hoc signed for development, not a notarized public release. See [Safari setup and distribution](docs/SAFARI.md). Original project: [jiuyang5354/bilibili-margin](https://github.com/jiuyang5354/bilibili-margin).
+
 <div align="center">
 
 <img src="store/edge/logo-300.png" width="104" height="104" alt="MARGIN icon" />
