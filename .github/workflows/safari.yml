@@ -24,6 +24,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run test:unit
+      - run: npm run test:safari:renew
       - run: npm run pack:safari
       - run: npm run test:safari
       - name: Validate app manifest with WebKit

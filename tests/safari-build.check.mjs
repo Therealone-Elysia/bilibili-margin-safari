@@ -1,3 +1,4 @@
+// Run with node --test, separately from the Vitest TypeScript suites.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';

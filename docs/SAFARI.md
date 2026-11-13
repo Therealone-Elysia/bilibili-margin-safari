@@ -86,6 +86,25 @@ npm run sign:safari:local
 
 相关依据：[Apple 免费账号与 Personal Team](https://developer.apple.com/help/account/basics/about-your-developer-account)、[Xcode 管理签名证书](https://developer.apple.com/documentation/xcode/sharing-your-teams-signing-certificates)。本机验收结果见 `SAFARI-VALIDATION.md`，其他系统版本仍需各自验证。
 
+### 后续续签脚本
+
+已经完成首次本机签名后，可直接检查并续签已安装的应用，不需要重新编译扩展：
+
+```sh
+npm run check:safari:signing  # 仅检查到期日和是否有合格新证书
+npm run renew:safari:local   # 需要续签时备份、签名、验证并更新安装版
+```
+
+也可以双击 `scripts/renew-safari-local.command`。需要 Node.js 22 或更新版本，入口会查找 PATH、`~/.local/bin`、Homebrew 和 `/usr/local/bin` 中的 Node。
+
+默认只在安装版证书剩余 30 天以内（或已经过期）、且钥匙串中存在同一团队的更长有效期开发证书时续签。证书有效期充足时立即退出，不改动安装版；没有新证书则提示在 Xcode 创建证书。脚本不会自动登录 Apple、创建证书，也不能通过重复签署同一证书延长有效期。钥匙串可能仍要求本人确认。
+
+真正替换前请完全退出 Safari 和 MARGIN Safari。脚本先验证原包，保留原有沙盒权限，将新签名包验证通过后保存旧版 ZIP 到 `~/Library/Application Support/MARGIN Safari/Backups`，再替换固定位置的安装版；替换后验证失败会恢复旧版。它不主动修改浏览器设置或数据，也不更换签名团队及扩展标识。完成后请自行重开 Safari 验证扩展是否正常，系统仍可能弹出确认。
+
+其他安装位置及检查期限可通过 `node scripts/safari-renew-local.mjs --renew --app '/path/to/MARGIN Safari.app' --days 45` 指定；备份目录用 `--backups` 指定。要指定新证书，可设置 `SIGN_IDENTITY` 为其 SHA-1 指纹。脚本不安装定时任务，需由您双击或通过命令触发。中途断电或进程被强制结束不属于可保证自动回滚的情况；请保留备份及脚本提示的工作目录，不要同时手动替换应用。
+
+2026-11-14 验证：真实安装版的到期日读取、`--check`、无需续签时的 `--renew` 和双击入口对应的命令均通过；8 项独立检查覆盖新证书筛选及失败回滚。当前证书尚未临期，本次未创建新证书或替换正常工作的安装版，未来新证书的实际续签流程仍需届时验收。
+
 ## 正式签名与公证
 
 想让其他人安装后正常长期使用，需要 Apple Developer Program 的 Developer ID Application 证书，并对应用公证；也可以经 Mac App Store 分发。详见 [Apple 分发文档](https://developer.apple.com/documentation/safariservices/distributing-your-safari-web-extension)。
